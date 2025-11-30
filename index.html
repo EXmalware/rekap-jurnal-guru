@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Data Jurnal Mengajar Guru - SMK Negeri 1 Bumijawa</title>
+    <meta name="description" content="Sistem Manajemen Data Pembelajaran SMK Negeri 1 Bumijawa">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Memuat data...</p>
+    </div>
+
+    <!-- Main Container -->
+    <div id="mainContainer" class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <img id="schoolLogo" src="default-logo.svg" alt="Logo Sekolah" class="school-logo">
+                    <div class="header-text">
+                        <h1 id="schoolName">SMK Negeri 1 Bumijawa</h1>
+                        <p id="academicYear" class="academic-year">Tahun Pelajaran 2025/2026</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button id="toggleViewBtn" class="btn btn-secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                            <path
+                                d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                        </svg>
+                        <span id="toggleViewText">Admin</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- User View -->
+        <div id="userView" class="view-container active">
+            <div class="control-panel">
+                <div class="filter-section">
+                    <label for="teacherFilter" class="filter-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        Pilih Guru:
+                    </label>
+                    <select id="teacherFilter" class="teacher-select">
+                        <option value="">-- Pilih Guru --</option>
+                        <option value="all">Semua Guru</option>
+                    </select>
+                </div>
+                <div class="filter-section">
+                    <label for="dateFrom" class="filter-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        Dari Tanggal:
+                    </label>
+                    <input type="date" id="dateFrom" class="date-input">
+                </div>
+                <div class="filter-section">
+                    <label for="dateTo" class="filter-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        Sampai Tanggal:
+                    </label>
+                    <input type="date" id="dateTo" class="date-input">
+                </div>
+                <div class="action-buttons">
+                    <button id="exportPdfBtn" class="btn btn-primary" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Ekspor ke PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div id="noDataMessage" class="no-data-message">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <path d="M9 11l3 3L22 4" />
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                    </svg>
+                    <h3>Pilih Guru untuk Menampilkan Data</h3>
+                    <p>Silakan pilih guru dari dropdown di atas untuk melihat data pembelajaran</p>
+                </div>
+                <table id="dataTable" class="data-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Tanggal</th>
+                            <th>Hari</th>
+                            <th>Jam Ke</th>
+                            <th>Nama Guru</th>
+                            <th>Kelas</th>
+                            <th>Ruang</th>
+                            <th>Jml Siswa</th>
+                            <th>Mapel</th>
+                            <th>Materi Pembelajaran</th>
+                            <th>Hadir</th>
+                            <th>Alpha</th>
+                            <th>Izin</th>
+                            <th>Sakit</th>
+                            <th>Tidak Hadir</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Admin View -->
+        <div id="adminView" class="view-container">
+            <div class="admin-panel">
+                <h2 class="admin-title">Panel Administrasi</h2>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="settings">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M12 1v6m0 6v6m-6-6h6m6 0h-6" />
+                        </svg>
+                        Pengaturan Sekolah
+                    </button>
+                    <button class="tab-btn" data-tab="teachers">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 00-3-3.87m-4-12a4 4 0 010 7.75" />
+                        </svg>
+                        Data Guru
+                    </button>
+                    <button class="tab-btn" data-tab="signatures">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                        </svg>
+                        Tanda Tangan
+                    </button>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settingsTab" class="tab-content active">
+                    <div class="form-section">
+                        <h3>Informasi Sekolah</h3>
+                        <div class="form-group">
+                            <label for="schoolNameInput">Nama Sekolah</label>
+                            <input type="text" id="schoolNameInput" class="form-input"
+                                placeholder="SMK Negeri 1 Bumijawa">
+                        </div>
+                        <div class="form-group">
+                            <label for="academicYearInput">Tahun Pelajaran</label>
+                            <input type="text" id="academicYearInput" class="form-input" placeholder="2025/2026">
+                        </div>
+                        <div class="form-group">
+                            <label for="principalNameInput">Nama Kepala Sekolah</label>
+                            <input type="text" id="principalNameInput" class="form-input"
+                                placeholder="NUR KHIKMAH, S.Pd., M.Pd.">
+                        </div>
+                        <div class="form-group">
+                            <label for="principalNIPInput">NIP Kepala Sekolah</label>
+                            <input type="text" id="principalNIPInput" class="form-input"
+                                placeholder="197001011990032001">
+                        </div>
+                        <div class="form-group">
+                            <label for="curriculumNameInput">Nama Wakil Kurikulum</label>
+                            <input type="text" id="curriculumNameInput" class="form-input"
+                                placeholder="ILHAM SUSILO BAKTI, M.Kom">
+                        </div>
+                        <div class="form-group">
+                            <label for="curriculumNIPInput">NIP Wakil Kurikulum</label>
+                            <input type="text" id="curriculumNIPInput" class="form-input"
+                                placeholder="198505152010011015">
+                        </div>
+                        <div class="form-group">
+                            <label for="logoUpload">Logo Sekolah</label>
+                            <div class="file-upload-container">
+                                <input type="file" id="logoUpload" accept="image/*" class="file-input">
+                                <label for="logoUpload" class="file-label">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    Pilih File
+                                </label>
+                                <div id="logoPreview" class="image-preview"></div>
+                            </div>
+                        </div>
+                        <button id="saveSettingsBtn" class="btn btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            Simpan Pengaturan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Teachers Tab -->
+                <div id="teachersTab" class="tab-content">
+                    <div class="form-section">
+                        <h3>Manajemen Data Guru</h3>
+                        <div class="button-group">
+                            <button id="importTeachersBtn" class="btn btn-primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                                Import dari Google Sheets
+                            </button>
+                        </div>
+                        <div id="teachersList" class="teachers-list">
+                            <!-- Teachers will be listed here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Signatures Tab -->
+                <div id="signaturesTab" class="tab-content">
+                    <div class="form-section">
+                        <h3>Tanda Tangan untuk PDF</h3>
+                        <p class="help-text">Upload gambar tanda tangan yang akan digunakan pada ekspor PDF</p>
+
+                        <div class="signature-upload-grid">
+                            <div class="signature-upload-item">
+                                <label>Tanda Tangan Kepala Sekolah</label>
+                                <input type="file" id="principalSignature" accept="image/*" class="file-input">
+                                <label for="principalSignature" class="file-label">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    Pilih File
+                                </label>
+                                <div id="principalSigPreview" class="signature-preview"></div>
+                                <button id="deletePrincipalSig" class="btn btn-danger btn-sm mt-2"
+                                    style="display: none;">Hapus</button>
+                            </div>
+
+                            <div class="signature-upload-item">
+                                <label>Tanda Tangan Wakil Kurikulum</label>
+                                <input type="file" id="curriculumSignature" accept="image/*" class="file-input">
+                                <label for="curriculumSignature" class="file-label">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    Pilih File
+                                </label>
+                                <div id="curriculumSigPreview" class="signature-preview"></div>
+                                <button id="deleteCurriculumSig" class="btn btn-danger btn-sm mt-2"
+                                    style="display: none;">Hapus</button>
+                            </div>
+
+                            <div class="signature-upload-item">
+                                <label>Tanda Tangan Guru Mapel</label>
+                                <input type="file" id="teacherSignature" accept="image/*" class="file-input">
+                                <label for="teacherSignature" class="file-label">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    Pilih File
+                                </label>
+                                <div id="teacherSigPreview" class="signature-preview"></div>
+                                <button id="deleteTeacherSig" class="btn btn-danger btn-sm mt-2"
+                                    style="display: none;">Hapus</button>
+                            </div>
+                        </div>
+
+                        <button id="saveSignaturesBtn" class="btn btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            Simpan Tanda Tangan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="app.js"></script>
+    <script src="admin.js"></script>
+    <script src="pdf-generator.js"></script>
+</body>
+
+</html>

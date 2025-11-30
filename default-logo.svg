@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#667eea" opacity="0.1"/>
+  
+  <!-- School Building -->
+  <g transform="translate(100, 100)">
+    <!-- Main Building -->
+    <rect x="-40" y="-20" width="80" height="60" fill="#667eea" rx="4"/>
+    
+    <!-- Roof -->
+    <path d="M -50 -20 L 0 -45 L 50 -20 Z" fill="#764ba2"/>
+    
+    <!-- Flag Pole -->
+    <rect x="-2" y="-65" width="4" height="20" fill="#764ba2"/>
+    
+    <!-- Flag -->
+    <path d="M 2 -65 L 20 -60 L 2 -55 Z" fill="#ef4444"/>
+    
+    <!-- Windows Row 1 -->
+    <rect x="-30" y="-10" width="15" height="15" fill="#ffffff" rx="2"/>
+    <rect x="-8" y="-10" width="15" height="15" fill="#ffffff" rx="2"/>
+    <rect x="15" y="-10" width="15" height="15" fill="#ffffff" rx="2"/>
+    
+    <!-- Windows Row 2 -->
+    <rect x="-30" y="10" width="15" height="15" fill="#ffffff" rx="2"/>
+    <rect x="-8" y="10" width="15" height="15" fill="#ffffff" rx="2"/>
+    <rect x="15" y="10" width="15" height="15" fill="#ffffff" rx="2"/>
+    
+    <!-- Door -->
+    <rect x="-10" y="15" width="20" height="25" fill="#764ba2" rx="2"/>
+    <circle cx="5" cy="27" r="1.5" fill="#ffffff"/>
+    
+    <!-- Text SMK -->
+    <text x="0" y="55" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#667eea" text-anchor="middle">SMK</text>
+  </g>
+</svg>

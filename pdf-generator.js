@@ -230,7 +230,7 @@ function generatePDF(data, teacherName) {
     doc.setFont('helvetica', 'bold');
     doc.text(settings.principalName, sig1X + signatureWidth / 2, signatureY + signatureHeight + 4, { align: 'center' });
     doc.setFont('helvetica', 'normal');
-    doc.text(`NIP. ${settings.principalNIP || '-'}`, sig1X + signatureWidth / 2, signatureY + signatureHeight + 8, { align: 'center' });
+    doc.text(`NIP. ${settings.principalNIP || '19770821 200801 2 006'}`, sig1X + signatureWidth / 2, signatureY + signatureHeight + 8, { align: 'center' });
 
     // Wakil Kurikulum
     doc.text('Wakil Kepala Sekolah', sig2X + signatureWidth / 2, signatureY, { align: 'center' });
@@ -247,7 +247,7 @@ function generatePDF(data, teacherName) {
     doc.setFont('helvetica', 'bold');
     doc.text(settings.curriculumName, sig2X + signatureWidth / 2, signatureY + signatureHeight + 4, { align: 'center' });
     doc.setFont('helvetica', 'normal');
-    doc.text(`NIP. ${settings.curriculumNIP || '-'}`, sig2X + signatureWidth / 2, signatureY + signatureHeight + 8, { align: 'center' });
+    doc.text(`NIP. ${settings.curriculumNIP || '19880114 202221 1 006'}`, sig2X + signatureWidth / 2, signatureY + signatureHeight + 8, { align: 'center' });
 
     // Guru Mapel
     doc.text('Bumijawa, ' + currentDate, sig3X + signatureWidth / 2, signatureY, { align: 'center' });

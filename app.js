@@ -129,6 +129,35 @@ async function loadTeachers() {
             code: row[5] || ''
         })).filter(teacher => teacher.name.trim() !== '');
 
+        // Auto-detect Kepala Sekolah and Wakil Kurikulum from status column
+        const principal = allTeachers.find(t => {
+            const status = t.status.toUpperCase().trim();
+            return status.includes('KEPALA SEKOLAH') || status.includes('KEPALA');
+        });
+
+        const curriculum = allTeachers.find(t => {
+            const status = t.status.toUpperCase().trim();
+            return status.includes('WAKIL') && status.includes('KURIKULUM');
+        });
+
+        // Update settings with auto-detected data
+        if (principal || curriculum) {
+            const currentSettings = getSettings();
+            const updatedSettings = { ...currentSettings };
+
+            if (principal) {
+                updatedSettings.principalName = principal.name;
+                updatedSettings.principalNIP = principal.nip;
+            }
+
+            if (curriculum) {
+                updatedSettings.curriculumName = curriculum.name;
+                updatedSettings.curriculumNIP = curriculum.nip;
+            }
+
+            saveSettings(updatedSettings);
+        }
+
         // Save to localStorage
         localStorage.setItem('teachers', JSON.stringify(allTeachers));
 

@@ -171,7 +171,34 @@ function generatePDF(data, teacherName) {
 
     doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Total Data: ${totalRecords} | Mata Pelajaran: ${uniqueSubjects || '-'}`, margin, signatureY);
+
+    // Split the summary into two parts to handle long subject lists
+    const summaryPrefix = `Total Data: ${totalRecords} | Mata Pelajaran: `;
+    const maxWidth = pageWidth - (margin * 2);
+
+    // Draw the prefix
+    doc.text(summaryPrefix, margin, signatureY);
+
+    // Calculate remaining width for subjects
+    const prefixWidth = doc.getTextWidth(summaryPrefix);
+    const subjectsMaxWidth = maxWidth - prefixWidth;
+
+    // Split subjects text if too long
+    const subjectsText = uniqueSubjects || '-';
+    const subjectsLines = doc.splitTextToSize(subjectsText, subjectsMaxWidth);
+
+    // Draw first line of subjects next to prefix
+    if (subjectsLines.length > 0) {
+        doc.text(subjectsLines[0], margin + prefixWidth, signatureY);
+    }
+
+    // Draw remaining lines below if any
+    if (subjectsLines.length > 1) {
+        for (let i = 1; i < subjectsLines.length; i++) {
+            signatureY += 4; // Line height
+            doc.text(subjectsLines[i], margin + prefixWidth, signatureY);
+        }
+    }
 
     signatureY += 8;
 
@@ -203,7 +230,7 @@ function generatePDF(data, teacherName) {
     doc.setFont('helvetica', 'bold');
     doc.text(settings.principalName, sig1X + signatureWidth / 2, signatureY + signatureHeight + 4, { align: 'center' });
     doc.setFont('helvetica', 'normal');
-    doc.text(`NIP. ${settings.principalNIP || '19770821 200801 2 006'}`, sig1X + signatureWidth / 2, signatureY + signatureHeight + 8, { align: 'center' });
+    doc.text(`NIP. ${settings.principalNIP || '-'}`, sig1X + signatureWidth / 2, signatureY + signatureHeight + 8, { align: 'center' });
 
     // Wakil Kurikulum
     doc.text('Wakil Kepala Sekolah', sig2X + signatureWidth / 2, signatureY, { align: 'center' });
@@ -220,7 +247,7 @@ function generatePDF(data, teacherName) {
     doc.setFont('helvetica', 'bold');
     doc.text(settings.curriculumName, sig2X + signatureWidth / 2, signatureY + signatureHeight + 4, { align: 'center' });
     doc.setFont('helvetica', 'normal');
-    doc.text(`NIP. ${settings.curriculumNIP || '19880114 202221 1 006'}`, sig2X + signatureWidth / 2, signatureY + signatureHeight + 8, { align: 'center' });
+    doc.text(`NIP. ${settings.curriculumNIP || '-'}`, sig2X + signatureWidth / 2, signatureY + signatureHeight + 8, { align: 'center' });
 
     // Guru Mapel
     doc.text('Bumijawa, ' + currentDate, sig3X + signatureWidth / 2, signatureY, { align: 'center' });

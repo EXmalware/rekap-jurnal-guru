@@ -49,6 +49,28 @@
 
         <!-- User View -->
         <div id="userView" class="view-container active">
+
+            <div class="tabs user-tabs" style="margin-bottom: 24px;">
+                <button class="tab-btn user-tab-btn active" data-tab="learningDataTab">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Data Pembelajaran
+                </button>
+                <button class="tab-btn user-tab-btn" data-tab="documentationTab">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    Data Dokumentasi
+                </button>
+            </div>
+
             <div class="control-panel">
                 <div class="filter-section">
                     <label for="teacherFilter" class="filter-label">
@@ -90,7 +112,16 @@
                     </label>
                     <input type="date" id="dateTo" class="date-input">
                 </div>
-                <div class="action-buttons">
+                <div class="filter-section" style="display: flex; align-items: flex-end;">
+                    <button id="applyFilterBtn" class="btn btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        Terapkan Filter
+                    </button>
+                </div>
+                <div class="action-buttons" style="margin-left: auto;">
                     <button id="exportPdfBtn" class="btn btn-primary" disabled>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
@@ -103,40 +134,82 @@
                 </div>
             </div>
 
-            <div class="table-container">
-                <div id="noDataMessage" class="no-data-message">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="1.5">
-                        <path d="M9 11l3 3L22 4" />
-                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-                    </svg>
-                    <h3>Pilih Guru untuk Menampilkan Data</h3>
-                    <p>Silakan pilih guru dari dropdown di atas untuk melihat data pembelajaran</p>
+            <!-- TAB 1: DATA PEMBELAJARAN (TABLE) -->
+            <div id="learningDataTab" class="user-tab-content" style="display: block;">
+                <div class="table-container">
+                    <div id="noDataMessage" class="no-data-message">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <path d="M9 11l3 3L22 4" />
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                        </svg>
+                        <h3>Pilih Guru untuk Menampilkan Data</h3>
+                        <p>Silakan pilih guru dari dropdown di atas untuk melihat data pembelajaran</p>
+                    </div>
+                    <table id="dataTable" class="data-table" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Hari</th>
+                                <th>Jam Ke</th>
+                                <th>Nama Guru</th>
+                                <th>Kelas</th>
+                                <th>Ruang</th>
+                                <th>Jml Siswa</th>
+                                <th>Mapel</th>
+                                <th>Materi Pembelajaran</th>
+                                <th>Hadir</th>
+                                <th>Alpha</th>
+                                <th>Izin</th>
+                                <th>Sakit</th>
+                                <th>Tidak Hadir</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
                 </div>
-                <table id="dataTable" class="data-table" style="display: none;">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Tanggal</th>
-                            <th>Hari</th>
-                            <th>Jam Ke</th>
-                            <th>Nama Guru</th>
-                            <th>Kelas</th>
-                            <th>Ruang</th>
-                            <th>Jml Siswa</th>
-                            <th>Mapel</th>
-                            <th>Materi Pembelajaran</th>
-                            <th>Hadir</th>
-                            <th>Alpha</th>
-                            <th>Izin</th>
-                            <th>Sakit</th>
-                            <th>Tidak Hadir</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <!-- Data will be inserted here -->
-                    </tbody>
-                </table>
+            </div>
+
+            <!-- TAB 2: DATA DOKUMENTASI (GRID) -->
+            <div id="documentationTab" class="user-tab-content" style="display: none;">
+                <!-- Bulk Actions Bar -->
+                <div id="docBulkActions" class="doc-bulk-actions"
+                    style="display: none; justify-content: flex-end; align-items: center; margin-bottom: 20px; padding: 15px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; gap: 10px;">
+                        <button id="refreshDocsBtn" class="btn btn-secondary" title="Refresh Gambar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 2v6h-6"></path>
+                                <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                                <path d="M3 22v-6h6"></path>
+                                <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                            </svg>
+                        </button>
+                        <button id="printDocsBtn" class="btn btn-primary" onclick="cetakLaporanDariLayar()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2">
+                                </path>
+                                <rect x="6" y="14" width="12" height="8"></rect>
+                            </svg>
+                            Cetak Laporan Dokumentasi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Print Header (Hanya Muncul Saat Halaman Dicetak) -->
+                <div class="print-header">
+                    <h2>Laporan Dokumentasi Jurnal Mengajar Guru</h2>
+                    <p id="printTeacherName">Nama Guru: -</p>
+                </div>
+
+                <div id="docContainer" class="doc-grid">
+                    <!-- Documentation cards will be inserted here -->
+                </div>
             </div>
         </div>
 
@@ -524,11 +597,6 @@
     </div>
 
     <!-- Toast Notification -->
-
-
-
-
-
     <div id="toast" class="toast"></div>
 
     <!-- Scripts -->

@@ -727,7 +727,197 @@ body {
     margin-bottom: var(--spacing-lg);
 }
 
-/* Responsive Design */
+/* Documentation Tab Styles */
+.user-tabs {
+    display: flex;
+    gap: var(--spacing-md);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.user-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.user-tab-btn:hover {
+    color: var(--primary-color);
+    background: var(--bg-secondary);
+}
+
+.user-tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.doc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md) 0;
+}
+
+.doc-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+}
+
+.doc-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--primary-light);
+}
+
+.doc-card-header {
+    background: var(--bg-secondary);
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.doc-card-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.doc-badge {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.doc-card-body {
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    flex-grow: 1;
+}
+
+.doc-card-body p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.doc-card-body strong {
+    color: var(--text-primary);
+    min-width: 60px;
+}
+
+.truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.doc-file {
+    margin-top: auto;
+    padding-top: var(--spacing-md);
+    border-top: 1px dashed var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.doc-file a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    word-break: break-all;
+    transition: color var(--transition-fast);
+}
+
+.doc-file a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.doc-file svg {
+    color: var(--primary-light);
+    flex-shrink: 0;
+}
+
+.doc-thumbnail {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: transform var(--transition-base);
+}
+
+.doc-thumbnail:hover {
+    transform: scale(1.02);
+}
+
+.doc-thumbnail-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.doc-checkbox-large {
+    display: none;
+}
+
+.doc-download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.doc-download-btn:hover {
+    background: var(--primary-light);
+    color: white;
+    border-color: var(--primary-light);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 1024px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+}
+
 @media (max-width: 768px) {
     body {
         padding: var(--spacing-sm);
@@ -775,20 +965,45 @@ body {
     .signature-upload-grid {
         grid-template-columns: 1fr;
     }
+
+    .filter-group {
+        flex-direction: column;
+    }
+    
+    .doc-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    
+    .doc-bulk-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
-/* Print Styles */
+/* =========================================
+   PRINT STYLES (@media print)
+   Khusus untuk Cetak Langsung Tabel / Dokumentasi
+========================================= */
 @media print {
-    body {
-        background: white;
-        padding: 0;
-    }
-
-    .header,
-    .control-panel,
+    /* Hide Everything NOT needed in print */
+    .sidebar, 
+    .top-header, 
+    .card-header, 
+    .filter-container, 
+    .tabs, 
+    .user-tabs,
+    .tab-btn, 
+    .export-btn, 
+    .doc-bulk-actions, 
+    .doc-download-btn,
     .btn,
+    .no-data-message,
+    .toast,
+    header,
+    nav,
+    .control-panel,
     .loading-overlay,
-    .toast {
+    .hide-on-print {
         display: none !important;
     }
 

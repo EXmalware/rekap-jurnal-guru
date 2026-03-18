@@ -27,15 +27,47 @@ function setupEventListeners() {
     // Teacher filter
     document.getElementById('teacherFilter').addEventListener('change', handleTeacherFilter);
 
-    // Date filters
-    document.getElementById('dateFrom').addEventListener('change', () => applyFilters());
-    document.getElementById('dateTo').addEventListener('change', () => applyFilters());
+    // Matikan event listener *change* agar wajib klik tombol Terapkan Filter
+    // document.getElementById('teacherFilter').addEventListener('change', handleTeacherFilter);
+    
+    // Apply Filter Button terpusat
+    const applyBtn = document.getElementById('applyFilterBtn');
+    if(applyBtn) {
+        applyBtn.addEventListener('click', async () => {
+            const selectedTeacher = document.getElementById('teacherFilter').value;
+            if (!selectedTeacher) {
+                clearTable();
+                return;
+            }
+            currentTeacher = selectedTeacher;
+            await loadData(selectedTeacher);
+        });
+    }
+
+    // Date filters (REMOVE auto apply on change)
+    // document.getElementById('dateFrom').addEventListener('change', () => applyFilters());
+    // document.getElementById('dateTo').addEventListener('change', () => applyFilters());
 
     // Export PDF
     document.getElementById('exportPdfBtn').addEventListener('click', handleExportPDF);
 
     // Toggle view with password
     document.getElementById('toggleViewBtn').addEventListener('click', handleToggleView);
+
+    // User View Tabs
+    const userTabs = document.querySelectorAll('.user-tab-btn');
+    userTabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            userTabs.forEach(t => t.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            
+            const target = e.currentTarget.getAttribute('data-tab');
+            document.querySelectorAll('.user-tab-content').forEach(c => {
+                c.style.display = 'none';
+            });
+            document.getElementById(target).style.display = 'block';
+        });
+    });
 }
 
 // Handle Toggle View with Password
@@ -235,17 +267,9 @@ function populateTeacherDropdown() {
     });
 }
 
-// Handle Teacher Filter Change
+// Handle Teacher Filter Change (Sudah tidak dipanggil langsung oleh elemen Select)
 async function handleTeacherFilter(event) {
-    const selectedTeacher = event.target.value;
-
-    if (!selectedTeacher) {
-        clearTable();
-        return;
-    }
-
-    currentTeacher = selectedTeacher;
-    await loadData(selectedTeacher);
+    // Fungsi ini dinonaktifkan asalnya karena trigger "Terapkan Filter" yang sekarang menangani semuanya
 }
 
 // Apply all filters (teacher + date range)
@@ -335,21 +359,42 @@ async function loadData(teacherName) {
 
         const rows = parseCSV(csvText);
 
+        const headers = rows[0] ? rows[0].map(h => typeof h === 'string' ? h.trim().toUpperCase() : '') : [];
+        
+        const idxTanggal = headers.indexOf('TANGGAL') > -1 ? headers.indexOf('TANGGAL') : 0;
+        const idxHari = headers.indexOf('HARI') > -1 ? headers.indexOf('HARI') : 1;
+        const idxJam = headers.indexOf('JAM KE') > -1 ? headers.indexOf('JAM KE') : 2;
+        const idxGuru = headers.indexOf('NAMA GURU') > -1 ? headers.indexOf('NAMA GURU') : 3;
+        const idxKelas = headers.indexOf('KELAS') > -1 ? headers.indexOf('KELAS') : 4;
+        const idxRuang = headers.indexOf('RUANG') > -1 ? headers.indexOf('RUANG') : 5;
+        const idxJmlSiswa = headers.indexOf('JUMLAH SISWA') > -1 ? headers.indexOf('JUMLAH SISWA') : 6;
+        const idxMapel = headers.indexOf('MAPEL') > -1 ? headers.indexOf('MAPEL') : 7;
+        const idxMateri = headers.indexOf('MATERI PEMBELAJARAN') > -1 ? headers.indexOf('MATERI PEMBELAJARAN') : headers.findIndex(h => h.includes('MATERI')) > -1 ? headers.findIndex(h => h.includes('MATERI')) : 8;
+        const idxHadir = headers.findIndex(h => h === 'HADIR') > -1 ? headers.findIndex(h => h === 'HADIR') : 9;
+        const idxAlpha = headers.findIndex(h => h.includes('ALPHA')) > -1 ? headers.findIndex(h => h.includes('ALPHA')) : 10;
+        const idxIzin = headers.findIndex(h => h.includes('IZIN')) > -1 ? headers.findIndex(h => h.includes('IZIN')) : 11;
+        const idxSakit = headers.findIndex(h => h.includes('SAKIT')) > -1 ? headers.findIndex(h => h.includes('SAKIT')) : 12;
+        const idxTidakHadir = headers.findIndex(h => h.includes('TIDAK HADIR')) > -1 ? headers.findIndex(h => h.includes('TIDAK HADIR')) : 13;
+        const idxDokumentasi = headers.findIndex(h => h.includes('DOKUMENTASI'));
+        const idxFileIdDrive = headers.findIndex(h => h.toUpperCase() === 'FILE ID DRIVE');
+
         allData = rows.slice(1).map(row => ({
-            tanggal: row[0] || '',
-            hari: row[1] || '',
-            jamKe: row[2] || '',
-            namaGuru: row[3] || '',
-            kelas: row[4] || '',
-            ruang: row[5] || '',
-            jumlahSiswa: row[6] || '',
-            mapel: row[7] || '',
-            materi: row[8] || '',
-            siswaHadir: row[9] || '',
-            siswaAlpha: row[10] || '',
-            siswaIzin: row[11] || '',
-            siswaSakit: row[12] || '',
-            siswaTidakHadir: row[13] || ''
+            tanggal: row[idxTanggal] || '',
+            hari: row[idxHari] || '',
+            jamKe: row[idxJam] || '',
+            namaGuru: row[idxGuru] || '',
+            kelas: row[idxKelas] || '',
+            ruang: row[idxRuang] || '',
+            jumlahSiswa: row[idxJmlSiswa] || '',
+            mapel: row[idxMapel] || '',
+            materi: row[idxMateri] || '',
+            siswaHadir: row[idxHadir] || '',
+            siswaAlpha: row[idxAlpha] || '',
+            siswaIzin: row[idxIzin] || '',
+            siswaSakit: row[idxSakit] || '',
+            siswaTidakHadir: row[idxTidakHadir] || '',
+            dokumentasi: idxDokumentasi > -1 ? row[idxDokumentasi] || '' : (row.length > 14 ? row[row.length - 1] || '' : ''),
+            fileIdDrive: idxFileIdDrive > -1 ? row[idxFileIdDrive] || '' : ''
         }));
 
         if (teacherName === 'all') {
@@ -386,6 +431,11 @@ function displayData() {
         noDataMessage.style.display = 'block';
         noDataMessage.querySelector('h3').textContent = 'Tidak Ada Data';
         noDataMessage.querySelector('p').textContent = 'Tidak ada data untuk filter yang dipilih';
+        
+        const docContainer = document.getElementById('docContainer');
+        if (docContainer) {
+            docContainer.innerHTML = '<div class="no-data-message" style="grid-column: 1 / -1; display: block; margin-top: 20px;"><h3>Tidak Ada Dokumentasi</h3><p>Tidak ada data untuk filter yang dipilih</p></div>';
+        }
         return;
     }
 
@@ -415,7 +465,152 @@ function displayData() {
 
         tableBody.appendChild(tr);
     });
+
+    displayDokumentasi();
 }
+
+// Display Dokumentasi
+function displayDokumentasi() {
+    const docContainer = document.getElementById('docContainer');
+    const docBulkActions = document.getElementById('docBulkActions');
+    const selectAllCheckbox = document.getElementById('selectAllDocs');
+    const selectedCountSpan = document.getElementById('selectedCount');
+    const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
+    const refreshDocsBtn = document.getElementById('refreshDocsBtn');
+    
+    if (!docContainer) return;
+
+    docContainer.innerHTML = '';
+    // Reset Data Label Print
+    const printTeacherName = document.getElementById('printTeacherName');
+    if (printTeacherName) {
+        printTeacherName.textContent = `Nama Guru: ${currentTeacher || '-'}`;
+    }
+
+    if(refreshDocsBtn) {
+        refreshDocsBtn.onclick = () => {
+            showToast('Memuat ulang gambar...', 'success');
+            displayDokumentasi();
+        };
+    }
+
+    const docsWithImages = filteredData.filter(row => row.dokumentasi && row.dokumentasi.trim() !== '');
+
+    if (docsWithImages.length === 0) {
+        if(docBulkActions) docBulkActions.style.display = 'none';
+        docContainer.innerHTML = '<div class="no-data-message" style="grid-column: 1 / -1; display: block; margin-top: 20px;"><h3>Tidak Ada Dokumentasi</h3><p>Data yang difilter tidak memiliki dokumen/foto</p></div>';
+        return;
+    }
+
+    if(docBulkActions) docBulkActions.style.display = 'flex';
+
+    docsWithImages.forEach((row, index) => {
+        const card = document.createElement('div');
+        card.className = 'doc-card';
+        
+        let displayUrl = '';
+        let fileName = row.dokumentasi;
+        let fileId = null;
+
+        // Jika Google Apps Script sudah mengisi FILE ID DRIVE untuk baris ini
+        if (row.fileIdDrive && row.fileIdDrive !== "NOT FOUND" && row.fileIdDrive.trim() !== "") {
+            fileId = row.fileIdDrive.trim();
+            fileName = row.dokumentasi.includes('/') ? row.dokumentasi.split('/').pop() : row.dokumentasi;
+            displayUrl = `https://drive.google.com/file/d/${fileId}/view`;
+        } else {
+            // Logika Fallback (Jika data baru masuk dan Script belum sempat dijalankan)
+            if (row.dokumentasi.includes('/')) {
+                fileName = row.dokumentasi.split('/').pop();
+            }
+
+            if (row.dokumentasi.startsWith('http')) {
+                displayUrl = row.dokumentasi;
+                const idMatch = row.dokumentasi.match(/[-\w]{25,}/);
+                if(idMatch) fileId = idMatch[0];
+            } else {
+                displayUrl = `https://drive.google.com/drive/u/0/search?q=${encodeURIComponent(fileName)}`;
+            }
+        }
+
+        // Tautan Download Langsung
+        let downloadUrl = '';
+        let thumbnailUrl = 'default-logo.svg';
+
+        if (fileId) {
+            downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+            thumbnailUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h300`;
+        } else {
+            downloadUrl = displayUrl;
+        }
+        
+        card.innerHTML = `
+            <div class="doc-thumbnail-container">
+                <a class="doc-img-link" href="${displayUrl}" target="_blank" title="Buka Gambar">
+                    <img src="${thumbnailUrl}" alt="Thumbnail ${fileName}" class="doc-thumbnail" onerror="this.src='default-logo.svg'; this.style.opacity='0.5'; this.style.padding='40px';">
+                </a>
+            </div>
+            <div class="doc-card-header">
+                <h4>${row.tanggal}</h4>
+                <span class="doc-badge">${row.kelas}</span>
+            </div>
+            <div class="doc-card-body">
+                <p><strong>Mapel:</strong> <span class="truncate-text" title="${row.mapel}">${row.mapel}</span></p>
+                <div class="doc-file" style="justify-content: flex-end;">
+                    <button class="doc-download-btn" onclick="downloadSingleFile('${downloadUrl}', '${row.tanggal}_${row.kelas}_${fileName}', ${fileId !== null})" title="Unduh Gambar Asli" style="${!fileId ? 'opacity: 0.5; cursor: not-allowed;' : ''}" ${!fileId ? 'disabled' : ''}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `;
+        docContainer.appendChild(card);
+    });
+}
+
+function downloadSingleFile(url, fileName, hasValidId) {
+    if (!url) return;
+
+    if (!hasValidId) {
+        showToast('Download tidak didukung untuk tipe file ini, silakan gunakan tombol "Cari Ke Drive"', 'warning');
+        return;
+    }
+
+    // Pendekatan iframes untuk mencoba menginisiasi unduhan latar belakang agar halaman tidak berpindah
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    
+    setTimeout(() => {
+        document.body.removeChild(iframe);
+    }, 5000);
+}
+
+// Terkait Cetak Laporan dari Layar (Native Browser Print)
+// Cepat, Instan, Bebas Bug 972 Halaman.
+function cetakLaporanDariLayar() {
+    const docsWithImages = filteredData.filter(row => row.dokumentasi && row.dokumentasi.trim() !== '');
+    
+    if (docsWithImages.length === 0) {
+        showToast('Tidak ada data dokumentasi untuk dicetak.', 'warning');
+        return;
+    }
+
+    // Memastikan seluruh kartu bisa dicetak tanpa batasan
+    const allCards = document.querySelectorAll('.doc-card');
+    allCards.forEach(card => card.classList.remove('hide-on-print'));
+
+    showToast(`Membuka jendela cetak untuk ${docsWithImages.length} laporan dokumentasi...`, 'success');
+    
+    // Set delay tipis agar Toast notifikasi hilang atau browser siap
+    setTimeout(() => {
+        window.print();
+    }, 500);
+}
+
 
 // Clear Table
 function clearTable() {
@@ -428,6 +623,9 @@ function clearTable() {
     noDataMessage.style.display = 'block';
     noDataMessage.querySelector('h3').textContent = 'Pilih Guru untuk Menampilkan Data';
     noDataMessage.querySelector('p').textContent = 'Silakan pilih guru dari dropdown di atas untuk melihat data pembelajaran';
+
+    const docContainer = document.getElementById('docContainer');
+    if (docContainer) docContainer.innerHTML = '';
 
     document.getElementById('dateFrom').value = '';
     document.getElementById('dateTo').value = '';

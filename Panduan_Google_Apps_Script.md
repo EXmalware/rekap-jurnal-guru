@@ -52,7 +52,7 @@ function updateDriveLinksOtomatis() {
   let ubatHitung = 0;
   let adaDiproses = false;
   
-  for (let i = 1; i < data.length; i++) {
+  for (let i = 15584; i < data.length; i++) { // Dimulai dari baris ke-15585 Spreadsheet (karena index Array -1)
     const docValue = data[i][docColIndex] ? data[i][docColIndex].toString() : "";
     const idValue = data[i][idColIndex] ? data[i][idColIndex].toString() : "";
     

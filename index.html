@@ -134,6 +134,38 @@
                 </div>
             </div>
 
+            <!-- MINI DASHBOARD WIDGETS -->
+            <div id="statsDashboard" class="stats-dashboard" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(52, 152, 219, 0.1); color: #3498db;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Pertemuan</h3>
+                        <p id="statTotalJam">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(46, 204, 113, 0.1); color: #2ecc71;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Kehadiran Siswa</h3>
+                        <p id="statHadir">0%</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(231, 76, 60, 0.1); color: #e74c3c;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3 style="font-size: 0.8rem; margin-bottom: 0px;">Siswa Tidak Hadir</h3>
+                        <p id="statTidakHadir" style="line-height: 1;">0</p>
+                        <small id="statKeteranganTidakHadir" style="color: var(--text-tertiary); font-size: 0.75rem; display: block; margin-top: 4px;">dalam 0 Pertemuan</small>
+                    </div>
+                </div>
+            </div>
+
             <!-- TAB 1: DATA PEMBELAJARAN (TABLE) -->
             <div id="learningDataTab" class="user-tab-content" style="display: block;">
                 <div class="table-container">
@@ -205,6 +237,7 @@
                 <div class="print-header">
                     <h2>Laporan Dokumentasi Jurnal Mengajar Guru</h2>
                     <p id="printTeacherName">Nama Guru: -</p>
+                    <p id="printDocCount" style="margin-top: 5px; font-weight: normal;">Jumlah Laporan: -</p>
                 </div>
 
                 <div id="docContainer" class="doc-grid">

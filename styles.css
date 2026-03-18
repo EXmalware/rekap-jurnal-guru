@@ -68,9 +68,12 @@ body {
     max-width: 1400px;
     margin: 0 auto;
     background: var(--bg-primary);
+    max-width: 1400px;
+    margin: 0 auto;
+    background: var(--bg-primary);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
-    overflow: hidden;
+    overflow: visible; /* Diubah ke visible agar position: sticky bisa berfungsi */
     animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -236,7 +239,7 @@ body {
     }
 }
 
-/* Control Panel */
+/* Control Panel / Sticky Filter */
 .control-panel {
     display: flex;
     justify-content: space-between;
@@ -244,9 +247,13 @@ body {
     gap: var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
     padding: var(--spacing-lg);
-    background: var(--bg-secondary);
+    background: rgba(248, 250, 252, 0.95);
+    backdrop-filter: blur(10px);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 20px;
+    z-index: 100;
 }
 
 .filter-section {
@@ -772,15 +779,17 @@ body {
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-color);
     overflow: hidden;
-    transition: all var(--transition-base);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .doc-card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-8px) scale(1.02);
     border-color: var(--primary-light);
+    z-index: 2;
 }
 
 .doc-card-header {
@@ -981,6 +990,106 @@ body {
 }
 
 /* =========================================
+   DASHBOARD WIDGETS
+========================================= */
+.stats-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: var(--spacing-md);
+}
+
+.stat-info h3 {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+}
+
+.stat-info p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* =========================================
+   SKELETON LOADER
+========================================= */
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+    background: #f6f7f8;
+    background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+    background-repeat: no-repeat;
+    background-size: 1000px 100%;
+    animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-text {
+    height: 14px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    width: 80%;
+}
+
+.skeleton-box {
+    height: 180px;
+    border-radius: var(--radius-md);
+}
+
+.skeleton-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.doc-thumbnail-container {
+    overflow: hidden; /* Required for zoom effect */
+}
+
+.doc-thumbnail {
+    transition: transform 0.5s ease;
+}
+
+.doc-card:hover .doc-thumbnail {
+    transform: scale(1.1);
+}
+
+
+/* =========================================
    PRINT STYLES (@media print)
    Khusus untuk Cetak Langsung Tabel / Dokumentasi
 ========================================= */
@@ -1002,6 +1111,7 @@ body {
     header,
     nav,
     .control-panel,
+    .stats-dashboard,
     .loading-overlay,
     .hide-on-print {
         display: none !important;

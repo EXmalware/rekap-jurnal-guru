@@ -29,10 +29,10 @@ function setupEventListeners() {
 
     // Matikan event listener *change* agar wajib klik tombol Terapkan Filter
     // document.getElementById('teacherFilter').addEventListener('change', handleTeacherFilter);
-    
+
     // Apply Filter Button terpusat
     const applyBtn = document.getElementById('applyFilterBtn');
-    if(applyBtn) {
+    if (applyBtn) {
         applyBtn.addEventListener('click', async () => {
             const selectedTeacher = document.getElementById('teacherFilter').value;
             if (!selectedTeacher) {
@@ -60,7 +60,7 @@ function setupEventListeners() {
         tab.addEventListener('click', (e) => {
             userTabs.forEach(t => t.classList.remove('active'));
             e.currentTarget.classList.add('active');
-            
+
             const target = e.currentTarget.getAttribute('data-tab');
             document.querySelectorAll('.user-tab-content').forEach(c => {
                 c.style.display = 'none';
@@ -360,7 +360,7 @@ async function loadData(teacherName) {
         const rows = parseCSV(csvText);
 
         const headers = rows[0] ? rows[0].map(h => typeof h === 'string' ? h.trim().toUpperCase() : '') : [];
-        
+
         const idxTanggal = headers.indexOf('TANGGAL') > -1 ? headers.indexOf('TANGGAL') : 0;
         const idxHari = headers.indexOf('HARI') > -1 ? headers.indexOf('HARI') : 1;
         const idxJam = headers.indexOf('JAM KE') > -1 ? headers.indexOf('JAM KE') : 2;
@@ -431,16 +431,46 @@ function displayData() {
         noDataMessage.style.display = 'block';
         noDataMessage.querySelector('h3').textContent = 'Tidak Ada Data';
         noDataMessage.querySelector('p').textContent = 'Tidak ada data untuk filter yang dipilih';
-        
+
         const docContainer = document.getElementById('docContainer');
         if (docContainer) {
             docContainer.innerHTML = '<div class="no-data-message" style="grid-column: 1 / -1; display: block; margin-top: 20px;"><h3>Tidak Ada Dokumentasi</h3><p>Tidak ada data untuk filter yang dipilih</p></div>';
         }
+
+        const dashboard = document.getElementById('statsDashboard');
+        if (dashboard) dashboard.style.display = 'none';
+
         return;
     }
 
     dataTable.style.display = 'table';
     noDataMessage.style.display = 'none';
+
+    // Kalkulasi Data Dashboard Mini
+    const dashboard = document.getElementById('statsDashboard');
+    if (dashboard) {
+        dashboard.style.display = 'grid'; // Tampilkan Dasbor
+        let totalHadir = 0, totalAlfa = 0, totalSakitIzin = 0;
+
+        filteredData.forEach(row => {
+            totalHadir += parseInt(row.siswaHadir) || 0;
+            totalAlfa += (parseInt(row.siswaAlpha) || 0) + (parseInt(row.siswaTidakHadir) || 0);
+            totalSakitIzin += (parseInt(row.siswaIzin) || 0) + (parseInt(row.siswaSakit) || 0);
+        });
+
+        const totalKehadiranSiswa = totalHadir + totalAlfa + totalSakitIzin;
+        const persentase = totalKehadiranSiswa > 0 ? Math.round((totalHadir / totalKehadiranSiswa) * 100) : 0;
+        const totalTidakHadir = totalAlfa + totalSakitIzin;
+
+        document.getElementById('statTotalJam').textContent = filteredData.length + ' Kali';
+        document.getElementById('statHadir').textContent = persentase + '%';
+
+        const elTidakHadir = document.getElementById('statTidakHadir');
+        if (elTidakHadir) elTidakHadir.textContent = totalTidakHadir;
+
+        const elKetTidakHadir = document.getElementById('statKeteranganTidakHadir');
+        if (elKetTidakHadir) elKetTidakHadir.textContent = 'dalam ' + filteredData.length + ' Pertemuan';
+    }
 
     filteredData.forEach((row, index) => {
         const tr = document.createElement('tr');
@@ -477,17 +507,18 @@ function displayDokumentasi() {
     const selectedCountSpan = document.getElementById('selectedCount');
     const downloadSelectedBtn = document.getElementById('downloadSelectedBtn');
     const refreshDocsBtn = document.getElementById('refreshDocsBtn');
-    
+
     if (!docContainer) return;
 
     docContainer.innerHTML = '';
     // Reset Data Label Print
     const printTeacherName = document.getElementById('printTeacherName');
+    const printDocCount = document.getElementById('printDocCount');
     if (printTeacherName) {
         printTeacherName.textContent = `Nama Guru: ${currentTeacher || '-'}`;
     }
 
-    if(refreshDocsBtn) {
+    if (refreshDocsBtn) {
         refreshDocsBtn.onclick = () => {
             showToast('Memuat ulang gambar...', 'success');
             displayDokumentasi();
@@ -496,18 +527,22 @@ function displayDokumentasi() {
 
     const docsWithImages = filteredData.filter(row => row.dokumentasi && row.dokumentasi.trim() !== '');
 
+    if (printDocCount) {
+        printDocCount.textContent = `Jumlah Laporan: ${docsWithImages.length} dokumentasi`;
+    }
+
     if (docsWithImages.length === 0) {
-        if(docBulkActions) docBulkActions.style.display = 'none';
+        if (docBulkActions) docBulkActions.style.display = 'none';
         docContainer.innerHTML = '<div class="no-data-message" style="grid-column: 1 / -1; display: block; margin-top: 20px;"><h3>Tidak Ada Dokumentasi</h3><p>Data yang difilter tidak memiliki dokumen/foto</p></div>';
         return;
     }
 
-    if(docBulkActions) docBulkActions.style.display = 'flex';
+    if (docBulkActions) docBulkActions.style.display = 'flex';
 
     docsWithImages.forEach((row, index) => {
         const card = document.createElement('div');
         card.className = 'doc-card';
-        
+
         let displayUrl = '';
         let fileName = row.dokumentasi;
         let fileId = null;
@@ -526,7 +561,7 @@ function displayDokumentasi() {
             if (row.dokumentasi.startsWith('http')) {
                 displayUrl = row.dokumentasi;
                 const idMatch = row.dokumentasi.match(/[-\w]{25,}/);
-                if(idMatch) fileId = idMatch[0];
+                if (idMatch) fileId = idMatch[0];
             } else {
                 displayUrl = `https://drive.google.com/drive/u/0/search?q=${encodeURIComponent(fileName)}`;
             }
@@ -535,27 +570,63 @@ function displayDokumentasi() {
         // Tautan Download Langsung
         let downloadUrl = '';
         let thumbnailUrl = 'default-logo.svg';
+        let fallbackUrl = ''; // URL lapis kedua
 
         if (fileId) {
             downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-            thumbnailUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h300`;
+            // Prioritas: LH3 CDN Google (Langsung foto murni beresolusi w600)
+            thumbnailUrl = `https://lh3.googleusercontent.com/d/${fileId}=w600`;
+            // Fallback: Jika LH3 tertutup akses public, pakai thumbnail api
+            fallbackUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w600`;
         } else {
             downloadUrl = displayUrl;
+            fallbackUrl = displayUrl;
         }
-        
+        // Fungsi Helper untuk Format Tanggal DD MMM YYYY (ID)
+        function formatTanggalIndo(dateString) {
+            if (!dateString) return '-';
+            let date = new Date(dateString);
+
+            // Jika parsing standard gagal atau menghasilkan format aneh, coba pisahkan manual
+            if (isNaN(date.getTime()) || dateString.includes('/')) {
+                const parts = dateString.split(/[\/\-]/);
+                // Umumnya format lokal adakah DD/MM/YYYY
+                if (parts.length === 3) {
+                    date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                }
+            }
+            // Jika masih gagal
+            if (isNaN(date.getTime())) return dateString;
+
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+            const d = date.getDate().toString().padStart(2, '0');
+            return `${d} ${months[date.getMonth()]} ${date.getFullYear()}`;
+        }
+
         card.innerHTML = `
-            <div class="doc-thumbnail-container">
-                <a class="doc-img-link" href="${displayUrl}" target="_blank" title="Buka Gambar">
-                    <img src="${thumbnailUrl}" alt="Thumbnail ${fileName}" class="doc-thumbnail" onerror="this.src='default-logo.svg'; this.style.opacity='0.5'; this.style.padding='40px';">
+            <div class="doc-thumbnail-container" style="position: relative; background: var(--bg-secondary);">
+                <!-- Skeleton Placeholder -->
+                <div class="skeleton" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1;"></div>
+                
+                <a class="doc-img-link" href="${displayUrl}" target="_blank" title="Buka Gambar" style="position: relative; z-index: 2; display: block; height: 100%;">
+                    <img src="${thumbnailUrl}" data-fallback="${fallbackUrl}" alt="Thumbnail ${fileName}" class="doc-thumbnail" style="opacity: 0; transition: opacity 0.4s ease;" 
+                         onload="this.style.opacity='1'; this.parentElement.previousElementSibling.style.display='none';" 
+                         onerror="if(this.dataset.fallback && this.src !== this.dataset.fallback) { this.src = this.dataset.fallback; } else { this.onerror=null; this.src='default-logo.svg'; this.style.opacity='0.5'; this.style.padding='40px'; this.parentElement.previousElementSibling.style.display='none'; }">
                 </a>
             </div>
             <div class="doc-card-header">
-                <h4>${row.tanggal}</h4>
-                <span class="doc-badge">${row.kelas}</span>
+                <h4>${formatTanggalIndo(row.tanggal)}</h4>
+                <div style="display: flex; gap: 5px;">
+                    <span class="doc-badge">${row.kelas}</span>
+                    <span class="doc-badge" style="background: var(--primary-light); color: var(--primary-color);">${row.ruang || '-'}</span>
+                </div>
             </div>
             <div class="doc-card-body">
-                <p><strong>Mapel:</strong> <span class="truncate-text" title="${row.mapel}">${row.mapel}</span></p>
-                <div class="doc-file" style="justify-content: flex-end;">
+                <p><strong>Mapel:</strong> <span class="truncate-text" title="${row.mapel}">${row.mapel || '-'}</span></p>
+                <p><strong>Materi:</strong> <span class="truncate-text" title="${row.materi}">${row.materi || '-'}</span></p>
+                <p><strong>Siswa Hadir:</strong> ${row.siswaHadir ? row.siswaHadir + ' Orang' : '-'}</p>
+                
+                <div class="doc-file" style="justify-content: flex-end; margin-top: 10px;">
                     <button class="doc-download-btn" onclick="downloadSingleFile('${downloadUrl}', '${row.tanggal}_${row.kelas}_${fileName}', ${fileId !== null})" title="Unduh Gambar Asli" style="${!fileId ? 'opacity: 0.5; cursor: not-allowed;' : ''}" ${!fileId ? 'disabled' : ''}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
@@ -583,7 +654,7 @@ function downloadSingleFile(url, fileName, hasValidId) {
     iframe.style.display = 'none';
     iframe.src = url;
     document.body.appendChild(iframe);
-    
+
     setTimeout(() => {
         document.body.removeChild(iframe);
     }, 5000);
@@ -593,7 +664,7 @@ function downloadSingleFile(url, fileName, hasValidId) {
 // Cepat, Instan, Bebas Bug 972 Halaman.
 function cetakLaporanDariLayar() {
     const docsWithImages = filteredData.filter(row => row.dokumentasi && row.dokumentasi.trim() !== '');
-    
+
     if (docsWithImages.length === 0) {
         showToast('Tidak ada data dokumentasi untuk dicetak.', 'warning');
         return;
@@ -604,7 +675,7 @@ function cetakLaporanDariLayar() {
     allCards.forEach(card => card.classList.remove('hide-on-print'));
 
     showToast(`Membuka jendela cetak untuk ${docsWithImages.length} laporan dokumentasi...`, 'success');
-    
+
     // Set delay tipis agar Toast notifikasi hilang atau browser siap
     setTimeout(() => {
         window.print();
@@ -632,6 +703,10 @@ function clearTable() {
 
     document.getElementById('exportPdfBtn').disabled = true;
     filteredData = [];
+
+    // Hide Dashboard
+    const dashboard = document.getElementById('statsDashboard');
+    if (dashboard) dashboard.style.display = 'none';
 }
 
 // Handle Export PDF
@@ -644,14 +719,54 @@ function handleExportPDF() {
     generatePDF(filteredData, currentTeacher);
 }
 
-// Show Loading
+// Show Loading - Dirombak jadi Skeleton
 function showLoading() {
-    document.getElementById('loadingOverlay').classList.remove('hidden');
+    // Mematikan Overlay bawaan
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) overlay.style.display = 'none';
+
+    // Munculkan Tabel Kerangka (Tabel Skeleton)
+    const tableBody = document.getElementById('tableBody');
+    const dataTable = document.getElementById('dataTable');
+    const noDataMessage = document.getElementById('noDataMessage');
+
+    if (noDataMessage) noDataMessage.style.display = 'none';
+    if (dataTable) dataTable.style.display = 'table';
+
+    let skeletonRows = '';
+    for (let i = 0; i < 6; i++) {
+        skeletonRows += `<tr><td colspan="15"><div class="skeleton skeleton-text" style="width: 100%; height: 20px; margin: 0;"></div></td></tr>`;
+    }
+    if (tableBody) tableBody.innerHTML = skeletonRows;
+
+    // Munculkan Kotak Kerangka (Grid Skeleton Foto)
+    const docContainer = document.getElementById('docContainer');
+    if (docContainer) {
+        let skeletonCards = '';
+        for (let i = 0; i < 6; i++) {
+            skeletonCards += `
+            <div class="skeleton-card">
+                <div class="skeleton-box skeleton"></div>
+                <div style="padding: 15px;">
+                    <div class="skeleton skeleton-text" style="width: 60%"></div>
+                    <div class="skeleton skeleton-text" style="width: 40%"></div>
+                    <div class="skeleton skeleton-text" style="width: 80%; margin-top: 20px;"></div>
+                </div>
+            </div>`;
+        }
+        docContainer.innerHTML = skeletonCards;
+    }
+
+    // Sembunyikan Dasbor dan Aksi massal ketika memuat
+    const dashboard = document.getElementById('statsDashboard');
+    if (dashboard) dashboard.style.display = 'none';
+    const docBulkActions = document.getElementById('docBulkActions');
+    if (docBulkActions) docBulkActions.style.display = 'none';
 }
 
 // Hide Loading
 function hideLoading() {
-    document.getElementById('loadingOverlay').classList.add('hidden');
+    // Tidak berbuat banyak, karena akan ketiban oleh rendering HTML asli di displayData() & displayDokumentasi()
 }
 
 // Show Toast Notification
